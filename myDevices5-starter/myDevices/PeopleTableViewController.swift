@@ -106,7 +106,17 @@ class PeopleTableViewController: UITableViewController {
 
     tableView.deselectRowAtIndexPath(indexPath, animated: true)
   }
-
+    override func tableView(tableView: UITableView, canEditRowAtIndexPath indexPath: NSIndexPath) -> Bool {
+        return pickerDelegate == nil
+    }
+    override func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
+        if editingStyle == .Delete {
+            let person = people[indexPath.row]
+            managedObjectContext.deleteObject(person)
+            reloadData()
+        }
+    }
+    
   func addPerson(sender: AnyObject?) {
     // The overall alert controller
     let alert = UIAlertController(title: "Add a Person", message: "Name?", preferredStyle: .Alert)

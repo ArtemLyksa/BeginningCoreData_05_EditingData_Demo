@@ -46,16 +46,25 @@ class DeviceDetailTableViewController: UITableViewController {
     }
   }
 
-  override func viewWillDisappear(animated: Bool) {
-    // need to add a device?
-    if device == nil {
-      if let name = nameTextField.text, deviceType = deviceTypeTextField.text, entity = NSEntityDescription.entityForName("Device", inManagedObjectContext: managedObjectContext) where !name.isEmpty && !deviceType.isEmpty {
-        device = Device(entity: entity, insertIntoManagedObjectContext: managedObjectContext)
-        device?.name = name
-        device?.deviceType = deviceType
-      }
+    override func viewWillDisappear(animated: Bool) {
+        // need to add a device?
+        if let device = device, name = nameTextField.text, deviceType = deviceTypeTextField.text {
+            device.name = name
+            device.deviceType = deviceType
+        } else
+            if device == nil {
+                if let name = nameTextField.text, deviceType = deviceTypeTextField.text, entity = NSEntityDescription.entityForName("Device", inManagedObjectContext: managedObjectContext) where !name.isEmpty && !deviceType.isEmpty {
+                    device = Device(entity: entity, insertIntoManagedObjectContext: managedObjectContext)
+                    device?.name = name
+                    device?.deviceType = deviceType
+                }
+             }
+        do {
+            try managedObjectContext.save()
+        }catch {
+            print("Error saving the managed object context \(error)")
+        }
     }
-  }
 
   override func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
     if indexPath.section == 1 && indexPath.row == 0 {
